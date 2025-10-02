@@ -1,0 +1,45 @@
+{
+  "flattrade": {
+    "api_key": "YOUR_FLATTRADE_API_KEY",
+    "api_secret": "YOUR_FLATTRADE_API_SECRET",
+    "broker_id": "YOUR_FLATTRADE_BROKER_ID",
+    "session_token": null
+  },
+  "telegram": {
+    "token": "YOUR_TELEGRAM_BOT_TOKEN",
+    "chat_id": "YOUR_TELEGRAM_CHAT_ID"
+  },
+  "trading": {
+    "position_size_inr": 2000,
+    "max_concurrent_positions": 10,
+    "profit_target_pct": 2.0,
+    "stop_loss_pct": 1.0,
+    "check_interval_seconds": 10,
+    "trading_start_hour": 9,
+    "trading_start_minute": 15,
+    "trading_end_hour": 15,
+    "trading_end_minute": 30
+  },
+  "bots": [
+    {
+      "name": "Nifty_50_Bot",
+      "symbol": "NIFTY 50",
+      "exchange": "NSE",
+      "strategy": {
+        "name": "ma_crossover",
+        "short_ma_period": 10,
+        "long_ma_period": 20
+      }
+    },
+    {
+      "name": "BSE_Sensex_Bot",
+      "symbol": "SENSEX",
+      "exchange": "BSE",
+      "strategy": {
+        "name": "ma_crossover",
+        "short_ma_period": 10,
+        "long_ma_period": 20
+      }
+    }
+  ]
+}

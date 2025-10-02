@@ -102,9 +102,6 @@ venv.bak/
 .spyderproject
 .spyderworkspace
 
-# Rope project settings
-.ropeproject
-
 # mkdocs documentation
 /site
 
@@ -113,5 +110,7 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
-.pyre/
+# Custom
+config.json
+*.csv
+*.log
