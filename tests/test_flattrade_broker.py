@@ -26,6 +26,77 @@ class TestFlattradeBroker(unittest.TestCase):
             # Mock the api object after instantiation
             self.broker.api = MagicMock()
 
+    def test_get_token_success(self):
+        """
+        Tests that _get_token returns the correct token on success.
+        """
+        # Arrange
+        self.broker.api.searchscrip.return_value = {
+            'stat': 'Ok',
+            'values': [{'tsym': 'RELIANCE-EQ', 'token': '456'}]
+        }
+
+        # Act
+        token = self.broker._get_token(symbol='RELIANCE', exchange='NSE')
+
+        # Assert
+        self.assertEqual(token, '456')
+
+    def test_get_token_api_returns_none(self):
+        """
+        Tests that _get_token returns None when the api call returns None.
+        """
+        # Arrange
+        self.broker.api.searchscrip.return_value = None
+
+        # Act
+        token = self.broker._get_token(symbol='RELIANCE', exchange='NSE')
+
+        # Assert
+        self.assertIsNone(token)
+
+    def test_get_token_api_returns_not_ok(self):
+        """
+        Tests that _get_token returns None when the api call returns a 'Not_Ok' status.
+        """
+        # Arrange
+        self.broker.api.searchscrip.return_value = {'stat': 'Not_Ok', 'emsg': 'Some error'}
+
+        # Act
+        token = self.broker._get_token(symbol='RELIANCE', exchange='NSE')
+
+        # Assert
+        self.assertIsNone(token)
+
+    def test_get_token_api_returns_no_values(self):
+        """
+        Tests that _get_token returns None when the api call returns no 'values'.
+        """
+        # Arrange
+        self.broker.api.searchscrip.return_value = {'stat': 'Ok', 'values': []}
+
+        # Act
+        token = self.broker._get_token(symbol='RELIANCE', exchange='NSE')
+
+        # Assert
+        self.assertIsNone(token)
+
+    def test_get_token_no_matching_symbol(self):
+        """
+        Tests that _get_token returns None when no symbol in the response matches.
+        """
+        # Arrange
+        self.broker.api.searchscrip.return_value = {
+            'stat': 'Ok',
+            'values': [{'tsym': 'INFY-EQ', 'token': '123'}]
+        }
+
+        # Act
+        token = self.broker._get_token(symbol='RELIANCE', exchange='NSE')
+
+        # Assert
+        self.assertIsNone(token)
+
     @patch('brokers.flattrade.FlattradeBroker._get_token')
     def test_get_quote_success(self, mock_get_token):
         """
@@ -57,6 +128,21 @@ class TestFlattradeBroker(unittest.TestCase):
         # Assert
         mock_get_token.assert_called_once_with('NSE', 'RELIANCE')
         self.broker.api.get_quotes.assert_not_called()
+        self.assertIsNone(quote)
+
+    @patch('brokers.flattrade.FlattradeBroker._get_token')
+    def test_get_quote_api_not_ok(self, mock_get_token):
+        """
+        Tests that get_quote returns None when the API returns a 'Not_Ok' status.
+        """
+        # Arrange
+        mock_get_token.return_value = 'test_token'
+        self.broker.api.get_quotes.return_value = {'stat': 'Not_Ok', 'emsg': 'Some error'}
+
+        # Act
+        quote = self.broker.get_quote(symbol='RELIANCE', exchange='NSE')
+
+        # Assert
         self.assertIsNone(quote)
 
     @patch('brokers.flattrade.FlattradeBroker._get_token')
@@ -103,6 +189,21 @@ class TestFlattradeBroker(unittest.TestCase):
         self.broker.api.get_time_price_series.assert_not_called()
         self.assertIsNone(data)
 
+    @patch('brokers.flattrade.FlattradeBroker._get_token')
+    def test_get_historical_data_api_not_ok(self, mock_get_token):
+        """
+        Tests that get_historical_data returns None when the API returns a 'Not_Ok' status.
+        """
+        # Arrange
+        mock_get_token.return_value = 'test_token'
+        self.broker.api.get_time_price_series.return_value = {'stat': 'Not_Ok', 'emsg': 'Some error'}
+
+        # Act
+        data = self.broker.get_historical_data(symbol='RELIANCE', exchange='NSE', start_date='2023-01-01', end_date='2023-01-02')
+
+        # Assert
+        self.assertIsNone(data)
+
     def test_place_order_buy_success(self):
         """
         Tests that place_order returns an order ID for a successful BUY order.
@@ -144,6 +245,67 @@ class TestFlattradeBroker(unittest.TestCase):
         # Assert
         self.broker.api.place_order.assert_called_once()
         self.assertIsNone(order_id)
+
+    def test_place_order_correct_market_order_params(self):
+        """
+        Tests that place_order uses the correct parameters for a MARKET order.
+        """
+        # Act
+        self.broker.place_order(symbol='RELIANCE', quantity=10, price=0.0,
+                                transaction_type='BUY', order_type='MARKET', product='CNC')
+
+        # Assert
+        self.broker.api.place_order.assert_called_with(
+            buy_or_sell='B', product_type='C', exchange='NSE',
+            tradingsymbol='RELIANCE', quantity=10, discloseqty=0,
+            price_type='MKT', price=0.0, trigger_price=0.0,
+            retention='DAY', remarks='strategy'
+        )
+
+    def test_place_order_correct_sl_order_params(self):
+        """
+        Tests that place_order uses the correct parameters for a SL order.
+        """
+        # Act
+        self.broker.place_order(symbol='RELIANCE', quantity=10, price=95.0,
+                                transaction_type='SELL', order_type='SL', product='MIS')
+
+        # Assert
+        self.broker.api.place_order.assert_called_with(
+            buy_or_sell='S', product_type='M', exchange='NSE',
+            tradingsymbol='RELIANCE', quantity=10, discloseqty=0,
+            price_type='SL-MKT', price=0.0, trigger_price=95.0,
+            retention='DAY', remarks='strategy'
+        )
+
+    def test_place_order_api_returns_none(self):
+        """
+        Tests that place_order returns None when the API call returns None.
+        """
+        # Arrange
+        self.broker.api.place_order.return_value = None
+
+        # Act
+        order_id = self.broker.place_order(symbol='RELIANCE', quantity=10, price=100.0,
+                                           transaction_type='BUY', order_type='LIMIT', product='MIS')
+
+        # Assert
+        self.assertIsNone(order_id)
+
+    def test_place_order_api_no_orderno(self):
+        """
+        Tests that place_order returns None when the API response is missing the order number.
+        """
+        # Arrange
+        self.broker.api.place_order.return_value = {'stat': 'Ok'}
+
+        # Act
+        order_id = self.broker.place_order(symbol='RELIANCE', quantity=10, price=100.0,
+                                           transaction_type='BUY', order_type='LIMIT', product='MIS')
+
+        # Assert
+        self.assertIsNone(order_id)
+
 
 if __name__ == '__main__':
     unittest.main()

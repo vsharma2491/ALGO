@@ -56,6 +56,25 @@ class TestFlattradeAuthentication(unittest.TestCase):
         self.assertEqual(credentials['api_secret'], 'test_api_secret')
         self.assertEqual(credentials['broker_id'], 'test_broker_id')
 
+    @patch('brokers.flattrade.os.getenv')
+    def test_get_credentials_missing_vars_returns_none(self, mock_getenv):
+        """
+        Verifies that `_get_credentials` returns None when any of the required
+        environment variables are missing.
+        """
+        # Arrange: Patch authenticate to do nothing during instantiation.
+        with patch.object(FlattradeBroker, 'authenticate', return_value=None):
+            broker = FlattradeBroker()
+
+        # Arrange: Simulate that one or more environment variables are not set.
+        mock_getenv.return_value = None
+
+        # Act: Call the method under test.
+        credentials = broker._get_credentials()
+
+        # Assert: Verify that the method returns None.
+        self.assertIsNone(credentials)
+
 
 if __name__ == '__main__':
     unittest.main()

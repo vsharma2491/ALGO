@@ -149,7 +149,12 @@ class FlattradeBroker(BrokerBase):
         token = self._get_token(exchange, symbol)
         if not token:
             return None
-        return self.api.get_quotes(exchange=exchange, token=token)
+        quote = self.api.get_quotes(exchange=exchange, token=token)
+        if quote and quote.get('stat') == 'Ok':
+            return quote
+
+        logger.error(f"Failed to get quote for {symbol}: {quote.get('emsg') if quote else 'Unknown Error'}")
+        return None
 
     def get_historical_data(self, symbol: str, exchange: str, start_date: str, end_date: str, interval: str = '1') -> Optional[List[Dict[str, Any]]]:
         """Retrieves historical data for a given symbol.
@@ -176,13 +181,19 @@ class FlattradeBroker(BrokerBase):
             logger.error("Invalid date format for historical data. Please use YYYY-MM-DD.")
             return None
 
-        return self.api.get_time_price_series(
+        data = self.api.get_time_price_series(
             exchange=exchange,
             token=token,
             starttime=start_timestamp,
             endtime=end_timestamp,
             interval=interval
         )
+
+        if isinstance(data, list):
+            return data
+
+        logger.error(f"Failed to get historical data for {symbol}: {data.get('emsg') if data else 'Unknown Error'}")
+        return None
 
     def place_order(self, symbol: str, quantity: int, price: float, transaction_type: str, order_type: str, product: str, exchange: str = 'NSE', tag: str = "strategy") -> Optional[str]:
         """Places a trading order.
@@ -235,7 +246,8 @@ class FlattradeBroker(BrokerBase):
             logger.info(f"Order placed successfully. Order ID: {ret['norenordno']}")
             return ret['norenordno']
         else:
-            logger.error(f"Order placement failed: {ret.get('emsg')}")
+            error_msg = ret.get('emsg') if ret else "Unknown error"
+            logger.error(f"Order placement failed: {error_msg}")
             return None
 
     def get_positions(self) -> Optional[List[Dict[str, Any]]]:
