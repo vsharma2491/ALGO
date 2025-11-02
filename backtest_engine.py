@@ -79,9 +79,9 @@ class Backtester:
 
         trade_log = pd.DataFrame(self.trades)
 
-        return self.calculate_performance(), trade_log, self.equity_curve
+        return self.calculate_performance(trade_log), trade_log, self.equity_curve
 
-    def calculate_performance(self) -> Dict[str, float]:
+    def calculate_performance(self, trade_log: pd.DataFrame) -> Dict[str, float]:
         """
         Calculates a comprehensive set of performance metrics.
 
@@ -99,11 +99,16 @@ class Backtester:
         max_drawdown = drawdown.min()
 
         # Correctly calculate win rate
-        trade_log = pd.DataFrame(self.trades)
-        if not trade_log.empty:
-            trade_log['pnl'] = trade_log['price'].diff().shift(-1) * trade_log['quantity']
-            wins = trade_log[trade_log['pnl'] > 0]
-            win_rate = len(wins) / len(trade_log) if len(trade_log) > 0 else 0
+        if not trade_log.empty and len(trade_log) % 2 == 0:
+            buy_prices = trade_log[trade_log['type'] == 'BUY']['price']
+            sell_prices = trade_log[trade_log['type'] == 'SELL']['price']
+
+            if len(buy_prices) == len(sell_prices):
+                pnl = sell_prices.values - buy_prices.values
+                wins = pnl[pnl > 0]
+                win_rate = len(wins) / len(buy_prices) if len(buy_prices) > 0 else 0
+            else:
+                win_rate = 0
         else:
             win_rate = 0
 

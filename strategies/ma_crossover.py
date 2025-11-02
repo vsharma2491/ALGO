@@ -1,11 +1,12 @@
 import pandas as pd
+import numpy as np
 from strategies.base_strategy import Strategy
 
-class MACrossover(Strategy):
+class MaCrossover(Strategy):
     """
     A simple moving average crossover strategy.
     """
-    def __init__(self, data, short_window=50, long_window=200):
+    def __init__(self, data, short_window=2, long_window=4):
         self.data = data
         self.short_window = short_window
         self.long_window = long_window

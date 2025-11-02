@@ -2,10 +2,14 @@ import argparse
 import logging
 import yaml
 import pandas as pd
+import importlib
+from dotenv import load_dotenv
 from data_downloader import download_nifty_data
 from backtest_engine import Backtester
 from reporting import generate_report
-from strategies.ma_crossover import MACrossover
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,7 +23,7 @@ def main():
     parser.add_argument("--start-date", type=str, help="The start date for the backtest (YYYY-MM-DD).")
     parser.add_argument("--end-date", type=str, help="The end date for the backtest (YYYY-MM-DD).")
     parser.add_argument("--strategy", type=str, default="ma_crossover", help="The strategy file to test.")
-    parser.add_argument("--optimize", action="store_true", help="Run a parameter sweep for the strategy.")
+    parser.add_argument("--sample-data", action="store_true", help="Run the backtest with sample data.")
 
     args = parser.parse_args()
 
@@ -35,25 +39,33 @@ def main():
         download_nifty_data(start_date, end_date)
         logging.info("Data download complete.")
 
-    if not args.download_data:
+    if not args.download_data or args.sample_data:
         logging.info(f"Running backtest with {args.strategy} strategy...")
 
-        if args.strategy == "ma_crossover":
-            try:
-                data = pd.read_csv('data/nifty_1min_data.csv')
-                data['datetime'] = pd.to_datetime(data['datetime'])
-                data.set_index('datetime', inplace=True)
-            except FileNotFoundError:
-                logging.error("Data file not found. Please run with --download-data first.")
-                return
+        data_file = 'data/sample_nifty_data.csv' if args.sample_data else 'data/nifty_1min_data.csv'
 
-            strategy = MACrossover(data)
-            backtester = Backtester(strategy, data, config['initial_capital'], config)
-            results, trades, equity_curve = backtester.run()
+        try:
+            data = pd.read_csv(data_file)
+            data['datetime'] = pd.to_datetime(data['datetime'])
+            data.set_index('datetime', inplace=True)
+        except FileNotFoundError:
+            logging.error(f"Data file not found: {data_file}. Please run with --download-data or use --sample-data.")
+            return
 
-            generate_report(results, trades, equity_curve)
+        try:
+            strategy_module = importlib.import_module(f"strategies.{args.strategy}")
+            strategy_class = getattr(strategy_module, args.strategy.capitalize().replace('_', ''))
+            strategy = strategy_class(data)
+        except (ImportError, AttributeError):
+            logging.error(f"Could not find strategy '{args.strategy}'. Please make sure the file 'strategies/{args.strategy}.py' and class '{args.strategy.capitalize().replace('_', '')}' exist.")
+            return
 
-            logging.info("Backtest complete.")
+        backtester = Backtester(strategy, data, config['initial_capital'], config)
+        results, trades, equity_curve = backtester.run()
+
+        generate_report(results, trades, equity_curve)
+
+        logging.info("Backtest complete.")
 
 if __name__ == "__main__":
     main()

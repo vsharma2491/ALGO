@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 from backtest_engine import Backtester
-from strategies.ma_crossover import MACrossover
+from strategies.ma_crossover import MaCrossover
 
 class TestBacktester(unittest.TestCase):
     """

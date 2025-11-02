@@ -5,3 +5,6 @@ pyyaml
 requests
 coverage
 openpyxl
+flask
+NorenRestApi-0.0.29-py3-none-any.whl
+python-dotenv

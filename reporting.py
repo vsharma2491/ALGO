@@ -19,11 +19,11 @@ def generate_report(performance_metrics: Dict[str, float], trades: pd.DataFrame,
     plot_pnl_curve(equity_curve)
     plot_drawdown(equity_curve)
 
-    monthly_returns = equity_curve.resample('M').ffill().pct_change()
+    monthly_returns = equity_curve.resample('ME').ffill().pct_change()
 
     export_to_csv(trades, performance_metrics, monthly_returns)
     export_to_excel(trades, performance_metrics, monthly_returns)
-    export_to_html(trades, performance_metrics, monthly_returns, "results/backtest_results.html")
+    export_to_html(trades, performance_metrics, monthly_returns, equity_curve, "results/backtest_results.html")
 
 def print_metrics(metrics: Dict[str, float]) -> None:
     """Prints the performance metrics to the console in a formatted table."""
@@ -74,7 +74,7 @@ def export_to_excel(trades: pd.DataFrame, metrics: Dict[str, float], monthly_ret
         monthly_returns.to_excel(writer, sheet_name="Monthly Returns")
     print("Results exported to results/backtest_results.xlsx")
 
-def export_to_html(trades: pd.DataFrame, metrics: Dict[str, float], monthly_returns: pd.Series, file_path: str) -> None:
+def export_to_html(trades: pd.DataFrame, metrics: Dict[str, float], monthly_returns: pd.Series, equity_curve: pd.Series, file_path: str) -> None:
     """Exports the backtest results to a self-contained HTML file with embedded charts."""
     import base64
     from io import BytesIO
