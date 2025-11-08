@@ -252,11 +252,19 @@ class FlattradeBroker(BrokerBase):
 
     def get_positions(self) -> Optional[List[Dict[str, Any]]]:
         """Retrieves the current positions."""
-        return self.api.get_positions()
+        positions = self.api.get_positions()
+        if positions and positions.get('stat') == 'Ok':
+            return positions.get('positions')
+        logger.error(f"Failed to get positions: {positions.get('emsg') if positions else 'Unknown Error'}")
+        return None
 
     def get_orders(self) -> Optional[List[Dict[str, Any]]]:
         """Retrieves the order book for the day."""
-        return self.api.get_order_book()
+        orders = self.api.get_order_book()
+        if orders and orders.get('stat') == 'Ok':
+            return orders.get('orders')
+        logger.error(f"Failed to get orders: {orders.get('emsg') if orders else 'Unknown Error'}")
+        return None
 
     # --- WebSocket Methods ---
 
