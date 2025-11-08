@@ -1,0 +1,24 @@
+2025-11-02 17:17:04 - system - DEBUG - logger.py:55 - setup_logging - PID:14092 - Logging is set up.
+2025-11-02 17:21:52 - system - DEBUG - logger.py:55 - setup_logging - PID:5628 - Logging is set up.
+2025-11-02 17:24:21 - system - DEBUG - logger.py:55 - setup_logging - PID:10776 - Logging is set up.
+2025-11-02 17:27:08 - system - DEBUG - logger.py:55 - setup_logging - PID:16988 - Logging is set up.
+2025-11-02 17:27:32 - system - DEBUG - logger.py:55 - setup_logging - PID:14292 - Logging is set up.
+2025-11-02 17:27:49 - system - DEBUG - logger.py:55 - setup_logging - PID:8344 - Logging is set up.
+2025-11-02 17:28:02 - system - DEBUG - logger.py:55 - setup_logging - PID:12752 - Logging is set up.
+2025-11-02 17:28:16 - system - DEBUG - logger.py:55 - setup_logging - PID:16752 - Logging is set up.
+2025-11-02 17:28:16 - system - INFO - flattrade.py:25 - __init__ - PID:16752 - Initializing FlattradeBroker...
+2025-11-02 17:28:16 - system - ERROR - flattrade.py:38 - _get_credentials - PID:16752 - Flattrade API key, secret, or user ID are not set in .env file.
+2025-11-02 17:28:33 - system - DEBUG - logger.py:55 - setup_logging - PID:1404 - Logging is set up.
+2025-11-02 17:28:33 - system - INFO - flattrade.py:25 - __init__ - PID:1404 - Initializing FlattradeBroker...
+2025-11-02 17:28:33 - system - ERROR - flattrade.py:38 - _get_credentials - PID:1404 - Flattrade API key, secret, or user ID are not set in .env file.
+2025-11-02 17:28:57 - system - DEBUG - logger.py:55 - setup_logging - PID:14208 - Logging is set up.
+2025-11-02 17:28:57 - system - INFO - flattrade.py:25 - __init__ - PID:14208 - Initializing FlattradeBroker...
+2025-11-02 17:56:43 - system - DEBUG - logger.py:55 - setup_logging - PID:1172 - Logging is set up.
+2025-11-02 17:56:55 - system - DEBUG - logger.py:55 - setup_logging - PID:11404 - Logging is set up.
+2025-11-02 17:58:14 - system - DEBUG - logger.py:55 - setup_logging - PID:3180 - Logging is set up.
+2025-11-02 17:59:36 - system - DEBUG - logger.py:55 - setup_logging - PID:2928 - Logging is set up.
+2025-11-02 17:59:36 - system - INFO - flattrade.py:25 - __init__ - PID:2928 - Initializing FlattradeBroker...
+2025-11-02 19:46:11 - system - DEBUG - logger.py:55 - setup_logging - PID:15908 - Logging is set up.
+2025-11-02 19:46:12 - system - INFO - flattrade.py:25 - __init__ - PID:15908 - Initializing FlattradeBroker...
+2025-11-02 19:47:52 - system - DEBUG - logger.py:55 - setup_logging - PID:17124 - Logging is set up.
+2025-11-02 19:47:53 - system - INFO - flattrade.py:25 - __init__ - PID:17124 - Initializing FlattradeBroker...

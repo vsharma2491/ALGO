@@ -1,0 +1,40 @@
+2025-11-08 17:42:37 - system - DEBUG - logger.py:55 - setup_logging - PID:11816 - Logging is set up.
+2025-11-08 17:46:33 - system - DEBUG - logger.py:55 - setup_logging - PID:9352 - Logging is set up.
+2025-11-08 17:53:23 - system - DEBUG - logger.py:55 - setup_logging - PID:1668 - Logging is set up.
+2025-11-08 18:07:49 - system - DEBUG - logger.py:55 - setup_logging - PID:12480 - Logging is set up.
+2025-11-08 18:17:51 - system - DEBUG - logger.py:55 - setup_logging - PID:6608 - Logging is set up.
+2025-11-08 18:17:51 - system - INFO - flattrade.py:25 - __init__ - PID:6608 - Initializing FlattradeBroker...
+2025-11-08 18:35:33 - system - DEBUG - logger.py:55 - setup_logging - PID:10228 - Logging is set up.
+2025-11-08 18:35:34 - system - INFO - flattrade.py:25 - __init__ - PID:10228 - Initializing FlattradeBroker...
+2025-11-08 18:55:40 - system - DEBUG - logger.py:55 - setup_logging - PID:10664 - Logging is set up.
+2025-11-08 18:55:53 - system - DEBUG - logger.py:55 - setup_logging - PID:9516 - Logging is set up.
+2025-11-08 18:56:21 - system - DEBUG - logger.py:55 - setup_logging - PID:8128 - Logging is set up.
+2025-11-08 18:56:22 - system - INFO - flattrade.py:25 - __init__ - PID:8128 - Initializing FlattradeBroker...
+2025-11-08 19:01:40 - system - DEBUG - logger.py:55 - setup_logging - PID:816 - Logging is set up.
+2025-11-08 19:01:48 - system - DEBUG - logger.py:55 - setup_logging - PID:9652 - Logging is set up.
+2025-11-08 19:01:49 - system - INFO - flattrade.py:25 - __init__ - PID:9652 - Initializing FlattradeBroker...
+2025-11-08 19:33:40 - system - DEBUG - logger.py:55 - setup_logging - PID:3528 - Logging is set up.
+2025-11-08 19:35:20 - system - DEBUG - logger.py:55 - setup_logging - PID:11068 - Logging is set up.
+2025-11-08 19:35:20 - system - INFO - flattrade.py:25 - __init__ - PID:11068 - Initializing FlattradeBroker...
+2025-11-08 21:34:43 - system - DEBUG - logger.py:55 - setup_logging - PID:9056 - Logging is set up.
+2025-11-08 21:34:57 - system - DEBUG - logger.py:55 - setup_logging - PID:13556 - Logging is set up.
+2025-11-08 21:35:21 - system - DEBUG - logger.py:55 - setup_logging - PID:7540 - Logging is set up.
+2025-11-08 21:35:40 - system - DEBUG - logger.py:55 - setup_logging - PID:1280 - Logging is set up.
+2025-11-08 21:35:53 - system - DEBUG - logger.py:55 - setup_logging - PID:10412 - Logging is set up.
+2025-11-08 21:36:20 - system - DEBUG - logger.py:55 - setup_logging - PID:8952 - Logging is set up.
+2025-11-08 21:36:38 - system - DEBUG - logger.py:55 - setup_logging - PID:9708 - Logging is set up.
+2025-11-08 21:36:59 - system - DEBUG - logger.py:55 - setup_logging - PID:14088 - Logging is set up.
+2025-11-08 21:37:17 - system - DEBUG - logger.py:55 - setup_logging - PID:4504 - Logging is set up.
+2025-11-08 21:37:52 - system - DEBUG - logger.py:55 - setup_logging - PID:9260 - Logging is set up.
+2025-11-08 21:52:38 - system - DEBUG - logger.py:55 - setup_logging - PID:2220 - Logging is set up.
+2025-11-08 21:52:39 - system - INFO - flattrade.py:25 - __init__ - PID:2220 - Initializing FlattradeBroker...
+2025-11-08 22:07:18 - system - DEBUG - logger.py:55 - setup_logging - PID:14036 - Logging is set up.
+2025-11-08 22:07:19 - system - INFO - flattrade.py:25 - __init__ - PID:14036 - Initializing FlattradeBroker...
+2025-11-08 22:22:19 - system - DEBUG - logger.py:55 - setup_logging - PID:11136 - Logging is set up.
+2025-11-08 22:31:25 - system - DEBUG - logger.py:55 - setup_logging - PID:7216 - Logging is set up.
+2025-11-08 22:31:46 - system - DEBUG - logger.py:55 - setup_logging - PID:10452 - Logging is set up.
+2025-11-08 22:33:46 - system - DEBUG - logger.py:55 - setup_logging - PID:7600 - Logging is set up.
+2025-11-08 22:33:47 - system - INFO - flattrade.py:25 - __init__ - PID:7600 - Initializing FlattradeBroker...
+2025-11-08 22:43:06 - system - DEBUG - logger.py:55 - setup_logging - PID:12412 - Logging is set up.
+2025-11-08 22:43:10 - system - DEBUG - logger.py:55 - setup_logging - PID:8304 - Logging is set up.
+2025-11-08 22:43:55 - system - DEBUG - logger.py:55 - setup_logging - PID:12892 - Logging is set up.

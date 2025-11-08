@@ -1,0 +1,7 @@
+.env
+.venc
+__pycache__/
+*.log
+results/
+config/
+*.csv
