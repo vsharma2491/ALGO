@@ -20,7 +20,11 @@ class StrategyTemplate(Strategy):
         """
         # --- Time-based filters ---
         # Example: Avoid trading in the first and last 15 minutes of the day
+<<<<<<< HEAD
         if bar.name.time() < pd.to_datetime('09:16').time() or bar.name.time() > pd.to_datetime('15:25').time():
+=======
+        if bar.name.time() < pd.to_datetime('09:30').time() or bar.name.time() > pd.to_datetime('15:15').time():
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
             return
 
         # --- Entry logic ---

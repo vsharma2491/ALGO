@@ -306,6 +306,65 @@ class TestFlattradeBroker(unittest.TestCase):
         # Assert
         self.assertIsNone(order_id)
 
+<<<<<<< HEAD
+=======
+    def test_get_positions_success(self):
+        """
+        Tests that get_positions returns data on a successful API call.
+        """
+        # Arrange
+        self.broker.api.get_positions.return_value = {'stat': 'Ok', 'positions': ['test_position']}
+
+        # Act
+        positions = self.broker.get_positions()
+
+        # Assert
+        self.broker.api.get_positions.assert_called_once()
+        self.assertEqual(positions, ['test_position'])
+
+    def test_get_positions_failure(self):
+        """
+        Tests that get_positions returns None when the API call fails.
+        """
+        # Arrange
+        self.broker.api.get_positions.return_value = {'stat': 'Not_Ok', 'emsg': 'Some error'}
+
+        # Act
+        positions = self.broker.get_positions()
+
+        # Assert
+        self.broker.api.get_positions.assert_called_once()
+        self.assertIsNone(positions)
+
+    def test_get_orders_success(self):
+        """
+        Tests that get_orders returns data on a successful API call.
+        """
+        # Arrange
+        self.broker.api.get_order_book.return_value = {'stat': 'Ok', 'orders': ['test_order']}
+
+        # Act
+        orders = self.broker.get_orders()
+
+        # Assert
+        self.broker.api.get_order_book.assert_called_once()
+        self.assertEqual(orders, ['test_order'])
+
+    def test_get_orders_failure(self):
+        """
+        Tests that get_orders returns None when the API call fails.
+        """
+        # Arrange
+        self.broker.api.get_order_book.return_value = {'stat': 'Not_Ok', 'emsg': 'Some error'}
+
+        # Act
+        orders = self.broker.get_orders()
+
+        # Assert
+        self.broker.api.get_order_book.assert_called_once()
+        self.assertIsNone(orders)
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
 if __name__ == '__main__':
     unittest.main()

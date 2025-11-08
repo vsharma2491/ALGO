@@ -32,7 +32,11 @@ class FlattradeBroker(BrokerBase):
         """Retrieves API credentials from environment variables."""
         api_key = os.getenv("FLATTRADE_API_KEY")
         api_secret = os.getenv("FLATTRADE_API_SECRET")
+<<<<<<< HEAD
         broker_id = os.getenv("FLATTRADE_USERNAME")
+=======
+        broker_id = os.getenv("FLATTRADE_BROKER_ID")
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
         if not all([api_key, api_secret, broker_id]):
             logger.error("Flattrade API key, secret, or user ID are not set in .env file.")
@@ -90,7 +94,11 @@ class FlattradeBroker(BrokerBase):
                 request.environ.get('werkzeug.server.shutdown')()
 
 
+<<<<<<< HEAD
         server = Thread(target=app.run, kwargs={'port': 21000})
+=======
+        server = Thread(target=app.run, kwargs={'port': 8080})
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         server.daemon = True
         server.start()
 
@@ -252,11 +260,27 @@ class FlattradeBroker(BrokerBase):
 
     def get_positions(self) -> Optional[List[Dict[str, Any]]]:
         """Retrieves the current positions."""
+<<<<<<< HEAD
         return self.api.get_positions()
 
     def get_orders(self) -> Optional[List[Dict[str, Any]]]:
         """Retrieves the order book for the day."""
         return self.api.get_order_book()
+=======
+        positions = self.api.get_positions()
+        if positions and positions.get('stat') == 'Ok':
+            return positions.get('positions')
+        logger.error(f"Failed to get positions: {positions.get('emsg') if positions else 'Unknown Error'}")
+        return None
+
+    def get_orders(self) -> Optional[List[Dict[str, Any]]]:
+        """Retrieves the order book for the day."""
+        orders = self.api.get_order_book()
+        if orders and orders.get('stat') == 'Ok':
+            return orders.get('orders')
+        logger.error(f"Failed to get orders: {orders.get('emsg') if orders else 'Unknown Error'}")
+        return None
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
     # --- WebSocket Methods ---
 

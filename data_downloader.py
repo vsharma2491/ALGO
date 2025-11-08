@@ -23,7 +23,11 @@ def download_nifty_data(start_date: str, end_date: str) -> None:
         print("Authentication failed. Please check your credentials.")
         return
 
+<<<<<<< HEAD
     symbol = "NIFTY 50" 
+=======
+    symbol = "NIFTY 50"
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
     exchange = "NSE"
     file_path = f"data/nifty_1min_data.csv"
 
@@ -32,7 +36,11 @@ def download_nifty_data(start_date: str, end_date: str) -> None:
             existing_df = pd.read_csv(file_path)
             existing_df['datetime'] = pd.to_datetime(existing_df['datetime'])
             latest_date = existing_df['datetime'].max().strftime('%Y-%m-%d')
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
             if latest_date > start_date:
                 start_date = (pd.to_datetime(latest_date) + timedelta(days=1)).strftime('%Y-%m-%d')
                 print(f"Resuming download from {start_date}")
@@ -40,7 +48,11 @@ def download_nifty_data(start_date: str, end_date: str) -> None:
             print(f"Could not read existing data from {file_path}. Starting fresh download.")
 
     print(f"Downloading data from {start_date} to {end_date}...")
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
     # In a real implementation, you would add retry logic and handle API rate limits here.
     try:
         data = broker.get_historical_data(symbol, exchange, start_date, end_date, interval='1')
@@ -51,18 +63,30 @@ def download_nifty_data(start_date: str, end_date: str) -> None:
     if data:
         df = pd.DataFrame(data)
         df.rename(columns={'time': 'datetime', 'into': 'open', 'inth': 'high', 'intl': 'low', 'intc': 'close', 'intv': 'volume'}, inplace=True)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         # Data validation
         df.dropna(inplace=True)
         df.drop_duplicates(inplace=True)
         df['datetime'] = pd.to_datetime(df['datetime'], unit='s')
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         # Save data
         if os.path.exists(file_path):
             df.to_csv(file_path, mode='a', header=False, index=False)
         else:
             df.to_csv(file_path, index=False)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         print(f"Data downloaded and saved to {file_path}")
     else:
         print("Failed to download data.")

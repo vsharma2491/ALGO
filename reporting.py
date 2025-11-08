@@ -1,7 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from typing import Dict
+<<<<<<< HEAD
 import os
+=======
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
 def generate_report(performance_metrics: Dict[str, float], trades: pd.DataFrame, equity_curve: pd.Series) -> None:
     """
@@ -16,6 +19,7 @@ def generate_report(performance_metrics: Dict[str, float], trades: pd.DataFrame,
         trades (pd.DataFrame): A DataFrame of all trades.
         equity_curve (pd.Series): The equity curve of the backtest.
     """
+<<<<<<< HEAD
     if not os.path.exists('results'):
         os.makedirs('results')
         
@@ -28,6 +32,17 @@ def generate_report(performance_metrics: Dict[str, float], trades: pd.DataFrame,
     export_to_csv(trades, performance_metrics, monthly_returns)
     export_to_excel(trades, performance_metrics, monthly_returns)
     export_to_html(trades, performance_metrics, monthly_returns, equity_curve, "results/backtest_results.html")
+=======
+    print_metrics(performance_metrics)
+    plot_pnl_curve(equity_curve)
+    plot_drawdown(equity_curve)
+
+    monthly_returns = equity_curve.resample('M').ffill().pct_change()
+
+    export_to_csv(trades, performance_metrics, monthly_returns)
+    export_to_excel(trades, performance_metrics, monthly_returns)
+    export_to_html(trades, performance_metrics, monthly_returns, "results/backtest_results.html")
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
 def print_metrics(metrics: Dict[str, float]) -> None:
     """Prints the performance metrics to the console in a formatted table."""
@@ -78,7 +93,11 @@ def export_to_excel(trades: pd.DataFrame, metrics: Dict[str, float], monthly_ret
         monthly_returns.to_excel(writer, sheet_name="Monthly Returns")
     print("Results exported to results/backtest_results.xlsx")
 
+<<<<<<< HEAD
 def export_to_html(trades: pd.DataFrame, metrics: Dict[str, float], monthly_returns: pd.Series, equity_curve: pd.Series, file_path: str) -> None:
+=======
+def export_to_html(trades: pd.DataFrame, metrics: Dict[str, float], monthly_returns: pd.Series, file_path: str) -> None:
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
     """Exports the backtest results to a self-contained HTML file with embedded charts."""
     import base64
     from io import BytesIO
@@ -106,7 +125,11 @@ def export_to_html(trades: pd.DataFrame, metrics: Dict[str, float], monthly_retu
     plt.grid(True)
     dd_b64 = fig_to_base64(fig_dd)
     plt.close(fig_dd)
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
     html = f"""
     <html>
     <head>
