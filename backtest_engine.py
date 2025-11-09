@@ -54,11 +54,7 @@ class Backtester:
         portfolio = pd.DataFrame(index=self.data.index)
         portfolio['holdings'] = (self.data['positions'].cumsum() * self.data['close'])
         portfolio['cash'] = self.initial_capital - (self.data['positions'] * self.data['close']).cumsum()
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         # Incorporate transaction costs
         num_trades = self.data['positions'].abs().sum()
         total_brokerage = num_trades * self.transaction_costs.get('brokerage', 0)
@@ -80,21 +76,12 @@ class Backtester:
                 "quantity": 1 # Simplified for this example
             }
             self.trades.append(trade)
-<<<<<<< HEAD
-        
+
         trade_log = pd.DataFrame(self.trades)
 
         return self.calculate_performance(trade_log), trade_log, self.equity_curve
 
     def calculate_performance(self, trade_log: pd.DataFrame) -> Dict[str, float]:
-=======
-
-        trade_log = pd.DataFrame(self.trades)
-
-        return self.calculate_performance(), trade_log, self.equity_curve
-
-    def calculate_performance(self) -> Dict[str, float]:
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         """
         Calculates a comprehensive set of performance metrics.
 
@@ -102,11 +89,7 @@ class Backtester:
             Dict[str, float]: A dictionary of performance metrics.
         """
         returns = self.equity_curve.pct_change().dropna()
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         total_return = (self.equity_curve.iloc[-1] / self.initial_capital) - 1
         cagr = (self.equity_curve.iloc[-1] / self.initial_capital) ** (252 / len(self.equity_curve)) - 1 if len(self.equity_curve) > 0 else 0
         sharpe_ratio = returns.mean() / returns.std() * np.sqrt(252) if returns.std() != 0 else 0
@@ -116,24 +99,16 @@ class Backtester:
         max_drawdown = drawdown.min()
 
         # Correctly calculate win rate
-<<<<<<< HEAD
         if not trade_log.empty and len(trade_log) % 2 == 0:
             buy_prices = trade_log[trade_log['type'] == 'BUY']['price']
             sell_prices = trade_log[trade_log['type'] == 'SELL']['price']
-            
+
             if len(buy_prices) == len(sell_prices):
                 pnl = sell_prices.values - buy_prices.values
                 wins = pnl[pnl > 0]
                 win_rate = len(wins) / len(buy_prices) if len(buy_prices) > 0 else 0
             else:
                 win_rate = 0
-=======
-        trade_log = pd.DataFrame(self.trades)
-        if not trade_log.empty:
-            trade_log['pnl'] = trade_log['price'].diff().shift(-1) * trade_log['quantity']
-            wins = trade_log[trade_log['pnl'] > 0]
-            win_rate = len(wins) / len(trade_log) if len(trade_log) > 0 else 0
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
         else:
             win_rate = 0
 
