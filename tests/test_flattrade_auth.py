@@ -31,12 +31,12 @@ class TestFlattradeAuthentication(unittest.TestCase):
 
         # Arrange: Set up the mock for the actual test.
         # Provide dummy credentials to simulate that the env vars are set.
-        def getenv_side_effect(key):
+        def getenv_side_effect(key, default=None):
             return {
                 "FLATTRADE_API_KEY": "test_api_key",
                 "FLATTRADE_API_SECRET": "test_api_secret",
                 "FLATTRADE_BROKER_ID": "test_broker_id"
-            }.get(key)
+            }.get(key, default)
         mock_getenv.side_effect = getenv_side_effect
 
         # Act: Call the method under test directly.
@@ -46,7 +46,8 @@ class TestFlattradeAuthentication(unittest.TestCase):
         expected_calls = [
             call('FLATTRADE_API_KEY'),
             call('FLATTRADE_API_SECRET'),
-            call('FLATTRADE_BROKER_ID')
+            call('FLATTRADE_BROKER_ID'),
+            call('FLASK_PORT', '8080')
         ]
         mock_getenv.assert_has_calls(expected_calls, any_order=True)
 

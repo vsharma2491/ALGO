@@ -306,8 +306,6 @@ class TestFlattradeBroker(unittest.TestCase):
         # Assert
         self.assertIsNone(order_id)
 
-<<<<<<< HEAD
-=======
     def test_get_positions_success(self):
         """
         Tests that get_positions returns data on a successful API call.
@@ -363,8 +361,6 @@ class TestFlattradeBroker(unittest.TestCase):
         # Assert
         self.broker.api.get_order_book.assert_called_once()
         self.assertIsNone(orders)
-
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
 if __name__ == '__main__':
     unittest.main()

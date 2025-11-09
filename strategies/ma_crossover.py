@@ -1,22 +1,12 @@
 import pandas as pd
-<<<<<<< HEAD
 import numpy as np
-from strategies.base_strategy import Strategy
-
-class MaCrossover(Strategy):
-    """
-    A simple moving average crossover strategy.
-    """
-    def __init__(self, data, short_window=2, long_window=4):
-=======
 from strategies.base_strategy import Strategy
 
 class MACrossover(Strategy):
     """
     A simple moving average crossover strategy.
     """
-    def __init__(self, data, short_window=50, long_window=200):
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
+    def __init__(self, data, short_window=2, long_window=4):
         self.data = data
         self.short_window = short_window
         self.long_window = long_window
@@ -33,14 +23,9 @@ class MACrossover(Strategy):
         signals['long_mavg'] = self.data['close'].rolling(window=self.long_window, min_periods=1, center=False).mean()
 
         # Create signals
-<<<<<<< HEAD
         signal_values = np.where(signals['short_mavg'][self.short_window:] > signals['long_mavg'][self.short_window:], 1.0, 0.0)
         signals['signal'] = 0.0
         signals.iloc[self.short_window:, signals.columns.get_loc('signal')] = signal_values
-=======
-        signals['signal'][self.short_window:] = np.where(signals['short_mavg'][self.short_window:]
-                                                    > signals['long_mavg'][self.short_window:], 1.0, 0.0)
->>>>>>> ef30c4da16fe3884e4c2b68e5cde3930584545b3
 
         # Generate trading orders
         signals['positions'] = signals['signal'].diff()

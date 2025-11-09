@@ -37,5 +37,18 @@ class TestBacktester(unittest.TestCase):
 
         self.assertEqual(results['Total Trades'], 2)
 
+    def test_win_rate_calculation(self):
+        """
+        Test that the win rate is calculated correctly.
+        """
+        # Create a scenario with one winning and one losing trade
+        self.strategy.signals['positions'] = [0, 1, -1, 1, -1]
+        self.data['close'] = [100, 102, 101, 103, 105] # Buy at 102, sell at 101 (loss). Buy at 103, sell at 105 (win).
+        self.backtester = Backtester(self.strategy, self.data, 100000, {})
+        results, _, _ = self.backtester.run()
+
+        self.assertEqual(results['Win Rate'], "50.00%")
+
+
 if __name__ == '__main__':
     unittest.main()
