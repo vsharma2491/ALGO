@@ -93,7 +93,7 @@ class FlattradeBroker(BrokerBase):
         payload = {
             "uid": broker_id,
             "pwd": pwd,
-            "factor2": totp,
+            "factor2": pan,
             "vc": vendor_code,
             "apkversion": "1.0.0",
             "imei": "12345",
