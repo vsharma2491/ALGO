@@ -11,7 +11,7 @@ sys.modules['logger'] = MagicMock()
 sys.modules['NorenRestApiPy'] = MagicMock()
 sys.modules['NorenRestApiPy.NorenApi'] = MagicMock()
 sys.modules['requests'] = MagicMock()
-sys.modules['pyotp'] = MagicMock()
+sys.modules['flask'] = MagicMock()
 
 from brokers.flattrade import FlattradeBroker
 
@@ -33,11 +33,9 @@ class TestFlattradeAuthentication(unittest.TestCase):
         # Provide dummy credentials to simulate that the env vars are set.
         def getenv_side_effect(key, default=None):
             return {
-                "BROKER_API_KEY": "test_api_key",
-                "BROKER_API_SECRET": "test_api_secret",
-                "BROKER_ID": "test_broker_id",
-                "BROKER_PASSWORD": "test_password",
-                "BROKER_TOTP_KEY": "test_totp_key"
+                "FLATTRADE_API_KEY": "test_api_key",
+                "FLATTRADE_API_SECRET": "test_api_secret",
+                "FLATTRADE_BROKER_ID": "test_broker_id"
             }.get(key, default)
         mock_getenv.side_effect = getenv_side_effect
 
@@ -46,11 +44,10 @@ class TestFlattradeAuthentication(unittest.TestCase):
 
         # Assert: Verify that os.getenv was called with the correct names.
         expected_calls = [
-            call('BROKER_API_KEY'),
-            call('BROKER_API_SECRET'),
-            call('BROKER_ID'),
-            call('BROKER_PASSWORD'),
-            call('BROKER_TOTP_KEY')
+            call('FLATTRADE_API_KEY'),
+            call('FLATTRADE_API_SECRET'),
+            call('FLATTRADE_BROKER_ID'),
+            call('FLASK_PORT', '8080')
         ]
         mock_getenv.assert_has_calls(expected_calls, any_order=True)
 
@@ -59,8 +56,6 @@ class TestFlattradeAuthentication(unittest.TestCase):
         self.assertEqual(credentials['api_key'], 'test_api_key')
         self.assertEqual(credentials['api_secret'], 'test_api_secret')
         self.assertEqual(credentials['broker_id'], 'test_broker_id')
-        self.assertEqual(credentials['password'], 'test_password')
-        self.assertEqual(credentials['totp_key'], 'test_totp_key')
 
     @patch('brokers.flattrade.os.getenv')
     def test_get_credentials_missing_vars_returns_none(self, mock_getenv):

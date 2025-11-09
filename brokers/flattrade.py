@@ -3,6 +3,7 @@ import sys
 import hashlib
 import requests
 import pyotp
+import json
 from typing import Dict, Any, Optional, List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -34,9 +35,12 @@ class FlattradeBroker(BrokerBase):
         broker_id = os.getenv("BROKER_ID")
         password = os.getenv("BROKER_PASSWORD")
         totp_key = os.getenv("BROKER_TOTP_KEY")
+        dob = os.getenv("BROKER_DOB")
+        vendor_code = os.getenv("BROKER_VENDOR_CODE")
+        pan = os.getenv("BROKER_PAN")
 
-        if not all([api_key, api_secret, broker_id, password, totp_key]):
-            logger.error("Flattrade API key, secret, user ID, password, or TOTP key are not set in .env file.")
+        if not all([api_key, api_secret, broker_id, password, totp_key, dob, vendor_code, pan]):
+            logger.error("Flattrade API key, secret, user ID, password, TOTP key, DOB, vendor code, or PAN are not set in .env file.")
             return None
 
         return {
@@ -44,7 +48,10 @@ class FlattradeBroker(BrokerBase):
             "api_secret": api_secret,
             "broker_id": broker_id,
             "password": password,
-            "totp_key": totp_key
+            "totp_key": totp_key,
+            "dob": dob,
+            "vendor_code": vendor_code,
+            "pan": pan
         }
 
     def authenticate(self) -> Optional[str]:
@@ -66,6 +73,9 @@ class FlattradeBroker(BrokerBase):
         broker_id = credentials['broker_id']
         password = credentials['password']
         totp_key = credentials['totp_key']
+        dob = credentials['dob']
+        vendor_code = credentials['vendor_code']
+        pan = credentials['pan']
 
         # Generate TOTP
         try:
@@ -76,25 +86,29 @@ class FlattradeBroker(BrokerBase):
             return None
 
         # Step 1: Get request token
-        sha256_hash = hashlib.sha256(f"{broker_id}{password}{api_key}".encode()).hexdigest()
+        pwd = hashlib.sha256(password.encode()).hexdigest()
+        appkey_source = f"{broker_id}|{api_key}"
+        appkey = hashlib.sha256(appkey_source.encode()).hexdigest()
+
         payload = {
             "uid": broker_id,
-            "pwd": password,
+            "pwd": pwd,
             "factor2": totp,
+            "vc": vendor_code,
             "apkversion": "1.0.0",
             "imei": "12345",
             "source": "API",
-            "api_key": api_key,
-            "d_hash": sha256_hash
+            "appkey": appkey
         }
 
         try:
-            response = requests.post("https://authapi.flattrade.in/trade/apitoken", json=payload)
+            response = requests.post("https://authapi.flattrade.in/trade/apitoken", data='jData=' + json.dumps(payload))
             response.raise_for_status()
             token_data = response.json()
+            print(f"Flattrade auth response: {token_data}")
 
-            if token_data.get('stat') == 'Ok' and token_data.get('token'):
-                self.session_token = token_data['token']
+            if token_data.get('stat') == 'Ok' and token_data.get('susertoken'):
+                self.session_token = token_data['susertoken']
             else:
                 logger.error(f"Failed to get request token: {token_data.get('emsg', 'Unknown error')}")
                 self.authenticated = False
@@ -109,9 +123,8 @@ class FlattradeBroker(BrokerBase):
 
         if ret and ret.get('stat') == 'Ok':
             logger.info("Flattrade authentication successful.")
-            self.access_token = self.session_token
             self.authenticated = True
-            return self.access_token
+            return self.session_token
         else:
             logger.error(f"Flattrade authentication failed: {ret.get('emsg') if ret else 'Unknown error'}")
             self.authenticated = False
