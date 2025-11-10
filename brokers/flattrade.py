@@ -2,8 +2,8 @@ import os
 import sys
 import hashlib
 import requests
-import pyotp
-import json
+from threading import Thread
+from flask import Flask, request
 from typing import Dict, Any, Optional, List
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -33,100 +33,85 @@ class FlattradeBroker(BrokerBase):
         api_key = os.getenv("BROKER_API_KEY")
         api_secret = os.getenv("BROKER_API_SECRET")
         broker_id = os.getenv("BROKER_ID")
-        password = os.getenv("BROKER_PASSWORD")
-        totp_key = os.getenv("BROKER_TOTP_KEY")
-        dob = os.getenv("BROKER_DOB")
-        vendor_code = os.getenv("BROKER_VENDOR_CODE")
-        pan = os.getenv("BROKER_PAN")
+        flask_port = os.getenv("FLASK_PORT", "8080")
 
-        if not all([api_key, api_secret, broker_id, password, totp_key, dob, vendor_code, pan]):
-            logger.error("Flattrade API key, secret, user ID, password, TOTP key, DOB, vendor code, or PAN are not set in .env file.")
+        if not all([api_key, api_secret, broker_id]):
+            logger.error("Flattrade API key, secret, or user ID are not set in .env file.")
             return None
 
-        return {
-            "api_key": api_key,
-            "api_secret": api_secret,
-            "broker_id": broker_id,
-            "password": password,
-            "totp_key": totp_key,
-            "dob": dob,
-            "vendor_code": vendor_code,
-            "pan": pan
-        }
+        return {"api_key": api_key, "api_secret": api_secret, "broker_id": broker_id, "flask_port": flask_port}
 
     def authenticate(self) -> Optional[str]:
-        """Authenticates with the Flattrade API using a fully automated flow.
+        """Authenticates with the Flattrade API using an automated flow.
 
-        This method uses pyotp to generate a TOTP and sends HTTP requests
-        to the Flattrade API to generate a session token.
+        This method starts a temporary web server to handle the redirect from
+        the Flattrade login page, automatically generating the session token.
 
         Returns:
             Optional[str]: The session token if successful, otherwise None.
         """
         credentials = self._get_credentials()
         if not credentials:
-            self.authenticated = False
             return None
 
         api_key = credentials['api_key']
         api_secret = credentials['api_secret']
         broker_id = credentials['broker_id']
-        password = credentials['password']
-        totp_key = credentials['totp_key']
-        dob = credentials['dob']
-        vendor_code = credentials['vendor_code']
-        pan = credentials['pan']
+        flask_port = int(credentials['flask_port'])
 
-        # Generate TOTP
-        try:
-            totp = pyotp.TOTP(totp_key).now()
-        except Exception as e:
-            logger.error(f"Failed to generate TOTP: {e}")
-            self.authenticated = False
-            return None
+        app = Flask(__name__)
 
-        # Step 1: Get request token
-        pwd = hashlib.sha256(password.encode()).hexdigest()
-        appkey_source = f"{broker_id}|{api_key}"
-        appkey = hashlib.sha256(appkey_source.encode()).hexdigest()
+        @app.route('/', methods=['GET'])
+        def token_handler():
+            request_token = request.args.get('code')
+            if not request_token:
+                return "Error: Could not retrieve request token.", 400
 
-        payload = {
-            "uid": broker_id,
-            "pwd": pwd,
-            "factor2": pan,
-            "vc": vendor_code,
-            "apkversion": "1.0.0",
-            "imei": "12345",
-            "source": "API",
-            "appkey": appkey
-        }
+            sha256_hash = hashlib.sha256(f"{api_key}{request_token}{api_secret}".encode()).hexdigest()
 
-        try:
-            response = requests.post("https://authapi.flattrade.in/trade/apitoken", data='jData=' + json.dumps(payload))
-            response.raise_for_status()
-            token_data = response.json()
-            print(f"Flattrade auth response: {token_data}")
+            payload = {
+                "api_key": api_key,
+                "request_code": request_token,
+                "api_secret": sha256_hash
+            }
 
-            if token_data.get('stat') == 'Ok' and token_data.get('susertoken'):
-                self.session_token = token_data['susertoken']
-            else:
-                logger.error(f"Failed to get request token: {token_data.get('emsg', 'Unknown error')}")
-                self.authenticated = False
-                return None
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Failed to get request token: {e}")
-            self.authenticated = False
-            return None
+            try:
+                response = requests.post("https://authapi.flattrade.in/trade/apitoken", json=payload)
+                response.raise_for_status()
+                token_data = response.json()
 
-        # Step 2: Set session
+                if token_data.get('stat') == 'Ok' and token_data.get('token'):
+                    self.session_token = token_data['token']
+                    return "Authentication successful! You can close this window."
+                else:
+                    return f"Error: {token_data.get('emsg', 'Unknown error')}", 400
+            except requests.exceptions.RequestException as e:
+                return f"Error: {e}", 500
+            finally:
+                # Shutdown the server once the request is handled
+                request.environ.get('werkzeug.server.shutdown')()
+
+
+        server = Thread(target=app.run, kwargs={'port': flask_port})
+        server.daemon = True
+        server.start()
+
+        login_url = f"https://auth.flattrade.in/?app_key={api_key}"
+        print(f"\nPlease log in to Flattrade using this URL: {login_url}")
+
+        # Wait until the token is captured
+        while not self.session_token:
+            pass
+
         ret = self.api.set_session(userid=broker_id, password="", usertoken=self.session_token)
 
         if ret and ret.get('stat') == 'Ok':
             logger.info("Flattrade authentication successful.")
+            self.access_token = self.session_token
             self.authenticated = True
-            return self.session_token
+            return self.access_token
         else:
-            logger.error(f"Flattrade authentication failed: {ret.get('emsg') if ret else 'Unknown error'}")
+            logger.error(f"Flattrade authentication failed: {ret.get('emsg')}")
             self.authenticated = False
             return None
 
